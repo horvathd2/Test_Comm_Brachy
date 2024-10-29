@@ -22,6 +22,10 @@ namespace Test_Comm_Brachy
 {
     public partial class Form1 : Form
     {
+        private bool dragging = false;
+        private Point dragCursorPoint;
+        private Point dragFormPoint;
+
         MqttClient client;
         static SerialPort _serialPort;
         bool connected = false;
@@ -132,7 +136,7 @@ namespace Test_Comm_Brachy
                     _serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                     _serialPort.Open();
                     connected = true;
-                    buttonConnect.Text = "Disconnect";
+                    buttonConnect.Text = "DISCONNECT";
                     //Thread myThread = new Thread(new ThreadStart(read_data));
                     //myThread.Start();
                     labelErrors.Visible = false;
@@ -145,7 +149,7 @@ namespace Test_Comm_Brachy
                 write_data();
                 _serialPort.Close();
                 connected = false;
-                buttonConnect.Text = "Connect";
+                buttonConnect.Text = "CONNECT";
             }
         }
 
@@ -317,6 +321,27 @@ namespace Test_Comm_Brachy
             */
 
             /////////////CREATE SEPARATE THREAD FOR RUNNING THE COMMAND CYCLE WITH DELAYS SO THAT THE GUI DOESNT FREEZE
+        }
+
+        private void panel3_MouseDown(object sender, MouseEventArgs e)
+        {
+            dragging = true;
+            dragCursorPoint = Cursor.Position;
+            dragFormPoint = this.Location;
+        }
+
+        private void panel3_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                Point diff = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+                this.Location = Point.Add(dragFormPoint, new Size(diff));
+            }
+        }
+
+        private void panel3_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
         }
     }
 }
